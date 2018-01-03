@@ -1,0 +1,36 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/01/Mux.hdl
+
+/** 
+ * Multiplexor. If sel==1 then out=b else out=a.
+ */
+
+CHIP Mux {
+    IN a, b, sel;
+    OUT out;
+
+    PARTS:
+    /*Assignment: Project 1, CSC 335, Berea College
+      Name: Emily Carter - cartere
+      Date: 09/01/17
+      Instructor: Mario Nakazawa*/
+    //Not S, so A
+    Nand(a=sel, b=sel, out=notsel);  //not S. If true, A passes
+
+    //Not S and A
+    Nand(a=a,b=notsel,out=out0);
+    Nand(a=a, b=notsel, out=out1);
+    Nand(a=out0, b=out1, out=anots);  //Not Sel, so A
+
+    //S and B
+    Nand(a=sel, b=b, out=out2);
+    Nand(a=sel, b=b, out=out3);
+    Nand(a=out2, b=out3, out=sandb);  //Sel, so B
+
+    //(Not S, so A) OR (S, so B)
+    Nand(a=anots, b=anots, out=out4);  //not (A not S)
+    Nand(a=sandb, b=sandb, out=out5);  //not (S and B)
+    Nand(a=out4, b=out5, out=out);  //Or complete...I hope!
+}

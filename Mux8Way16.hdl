@@ -1,0 +1,75 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/01/Mux8Way16.hdl
+
+/**
+ * 8-way 16-bit multiplexor.  
+ * out = a if sel==000
+ *       b if sel==001
+ *       etc.
+ *       h if sel==111
+ */
+
+
+CHIP Mux8Way16 {
+    IN a[16], b[16], c[16], d[16],
+       e[16], f[16], g[16], h[16],
+       sel[3];
+    OUT out[16];
+
+    PARTS:
+    /*Assignment: Project 1, CSC 335, Berea College
+      Name: Emily Carter - cartere
+      Date: 09/01/17
+      Instructor: Mario Nakazawa*/
+	  
+	//invert Sel. If inverse all true, output A
+	Not(in=sel[0], out=nots0);
+	Not(in=sel[1], out=nots1);
+	Not(in=sel[2], out=nots2);
+	
+	//Get selector values--replace one day with 3-way AND
+	And(a=nots1, b=nots0, out=sela0);  //Select A, 0000
+	And(a=sela0, b=nots2, out=sela);
+	
+	//Remember, starts reading from the right. 
+	//So, selectb if S1 is false and S0 is true.
+
+	And(a=nots2, b=nots1, out=selb0);  //Select B, 001
+	And(a=selb0, b=sel[0], out=selb);
+  	
+	And(a=nots2, b=sel[1], out=selc0);  //Select C, 010
+	And(a=selc0, b=nots0, out=selc);
+	
+	And(a=nots2, b=sel[1], out=seld0);  //Select D, 011
+	And(a=seld0, b=sel[0], out=seld);
+	
+	And(a=sel[2], b=nots1, out=sele0);  //Select E, 100	
+	And(a=sele0, b=nots0, out=sele);
+	
+	And(a=sel[2], b=nots1, out=self0);  //Select F, 101
+	And(a=self0, b=sel[0], out=self);
+	
+	And(a=sel[2], b=sel[1], out=selg0);  //Select G, 110
+	And(a=selg0, b=nots0, out=selg);
+	
+	And(a=sel[2], b=sel[1], out=selh0);  //Select H, 111
+	And(a=selh0, b=sel[0], out=selh);
+	
+	//If selb is true, b[16]. If selb is false, a[16]
+	Mux16(a[0..15]=a[0..15], b[0..15]=b[0..15], sel=selb, out[0..15]=or1); 
+	//or1 or C
+	Mux16(a[0..15]=or1, b[0..15]=c[0..15], sel=selc, out[0..15]=or2); 
+	//or2 or D
+	Mux16(a[0..15]=or2, b[0..15]=d[0..15], sel=seld, out[0..15]=or3); 
+	//or3 or E			
+	Mux16(a[0..15]=or3, b[0..15]=e[0..15], sel=sele, out[0..15]=or4); 
+					
+	//or4 or F				
+	Mux16(a[0..15]=or4, b[0..15]=f[0..15], sel=self, out[0..15]=or5); 	
+	//or5 or G
+	Mux16(a[0..15]=or5, b[0..15]=g[0..15], sel=selg, out[0..15]=or6); 	
+	//or6 or H. Output here is Out
+	Mux16(a[0..15]=or6, b[0..15]=h[0..15], sel=selh, out[0..15]=out[0..15]); 
+}

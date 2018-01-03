@@ -1,0 +1,33 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/01/DMux.hdl
+
+/**
+ * Dmultiplexor.  
+ * {a,b} = {in,0} if sel==0
+ *         {0,in} if sel==1
+ */
+
+
+CHIP DMux {
+    IN in, sel;
+    OUT a, b;
+
+    PARTS:
+    /*Assignment: Project 1, CSC 335, Berea College
+      Name: Emily Carter - cartere
+      Date: 09/01/17
+      Instructor: Mario Nakazawa*/
+    
+    Nand(a=sel,b=sel,out=notsel);  //Not Selector. If true, out equals A
+    //not selector and a
+    Nand(a=in,b=notsel,out=out0);
+    Nand(a=in,b=notsel, out=out1);
+    Nand(a=out0,b=out1,out=a);
+
+    //selector and b
+    Nand(a=in, b=sel, out=out2);
+    Nand(a=in, b=sel, out=out3);
+    Nand(a=out2, b=out3, out=b);
+}

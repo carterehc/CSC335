@@ -1,0 +1,37 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/01/Xor.hdl
+
+/**
+ *  Exclusive-or gate: out = !(a == b).
+ */
+
+CHIP Xor {
+
+    IN a, b;
+    OUT out;
+
+    PARTS:
+    /*Assignment: Project 1, CSC 335, Berea College
+      Name: Emily Carter - cartere
+      Date: 09/01/17
+      Instructor: Mario Nakazawa*/
+    Nand(a=a, b=a, out=nota);  //nota
+    Nand(a=b, b=b, out=notb);  //notb
+
+    //not a and b
+    Nand(a=nota, b=b, out=out0);
+    Nand(a=nota, b=b, out=out1);
+    Nand(a=out0, b=out1, out=bnota);  
+
+    //a and not b
+    Nand(a=a, b=notb, out=out2);
+    Nand(a=a, b=notb, out=out3);
+    Nand(a=out2, b=out3, out=anotb);
+
+    //(Not A and B) or (A and Not B)
+    Nand(a=bnota, b=bnota, out=out4);  //not (not a and b)
+    Nand(a=anotb, b=anotb, out=out5);  //not (a and not b)
+    Nand(a=out4, b=out5, out=out);  //or them!
+}

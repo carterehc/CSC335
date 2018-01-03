@@ -1,0 +1,24 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/01/Or.hdl
+
+
+/**
+ * Or gate: out = 1 if {a==1 or b==1}, 0 otherwise  
+ */
+
+CHIP Or {
+    IN a, b;
+    OUT out;
+
+    PARTS:
+    /*Assignment: Project 1, CSC 335, Berea College
+      Name: Emily Carter - cartere
+      Date: 09/01/17
+      Instructor: Mario Nakazawa*/
+
+    Nand(a=a, b=a, out=nota);  //part's gate pin = chip's gate pin
+    Nand(a=b, b=b, out=notb);  //not of each input
+    Nand(a=nota, b=notb, out=out);  //
+}

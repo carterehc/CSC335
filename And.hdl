@@ -1,0 +1,24 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/01/And.hdl
+
+/**
+ * And gate: out = 1 if {a==1 and b==1}, 0 otherwise  
+ */
+
+CHIP And {
+    IN a, b; //two 1-bit inputs
+    OUT out; //one 1-bit output
+    //BUILTIN Nand;  //use this gate in the parts..Don't think I need this line
+
+    PARTS:
+    /*Assignment: Project 1, CSC 335, Berea College
+      Name: Emily Carter - cartere
+      Date: 09/01/17
+      Instructor: Mario Nakazawa*/
+    // Internal parts with input pins and output pins. Consists entirely of NANDs
+    Nand(a=a, b=b, out=o);  //part's pin = this chip's pin
+    Nand(a=a, b=b, out=t);
+    Nand(a=o, b=t, out=out);
+}

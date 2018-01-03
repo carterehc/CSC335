@@ -1,0 +1,61 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/01/DMux8Way.hdl
+
+/**
+ * 8-way demultiplexor.  
+ * {a,b,c,d,e,f,g,h} = {in,0,0,0,0,0,0,0} if sel==000
+ *                     {0,in,0,0,0,0,0,0} if sel==001
+ *                     etc.
+ *                     {0,0,0,0,0,0,0,in} if sel==111
+ */
+
+
+CHIP DMux8Way {
+    IN in, sel[3];
+    OUT a, b, c, d, e, f, g, h;
+
+    PARTS:
+    /*Assignment: Project 1, CSC 335, Berea College
+      Name: Emily Carter - cartere
+      Date: 09/01/17
+      Instructor: Mario Nakazawa*/
+			
+	//invert Sel. If inverse both true, output a
+	Not(in=sel[0], out=nots0);
+	Not(in=sel[1], out=nots1);
+	Not(in=sel[2], out=nots2);
+	
+	//Select A
+	And3(a=nots2, b=nots1,c=nots0, out=sela);  //sel==000
+	And(a=in, b=sela, out=a);  //select a is true, output a
+	
+	//Select B
+	And3(a=nots2, b=nots1, c=sel[0], out=selb);  //sel==001
+	And(a=in, b=selb, out=b);
+	
+	//Select C
+	And(a=nots2, b=sel[1], c=nots0, out=selc);  //sel==010
+	And(a=in, b=selc, out=c);
+	
+	//SelectD
+	And(a=nots2, b=sel[1], c=sel[0], out=seld);  //sel==011
+    And(a=in, b=seld, out=d);
+	
+	//SelectE
+	And(a=sel[2],b=nots1,c=nots0 out=sele);  //sel==100
+    And(a=in, b=sele, out=e);
+	
+	//SelectF
+	And(a=sel[2],b=nots1, c=sel[0], out=self);  //sel==101
+    And(a=in, b=self, out=f);
+	
+	//SelectG
+	And(a=sel[2],b=sel[1],c=nots0 out=selg);  //sel==110
+    And(a=in, b=selg, out=g);
+	
+	//SelectH
+	And(a=sel[2],b=sel[1],c=sel[0] out=selh);  //sel==111
+    And(a=in, b=selh, out=h);
+}
