@@ -12,7 +12,7 @@
 class Code:
     """ translates ASM mnemonic to binary"""
     def __init__(self):
-        # put dics here (that's what she said)
+
         self.comp_d = comp_d = {'0': '0101010', '1': '0111111', '-1': '0111010', 'D': '0001100', 'A': '0110000', '!D': '0001101',
               '!A': '0110001',
               '-D': '0001111', '-A': '0110011', 'D+1': '0011111', 'A+1': '0110111', 'D-1': '0001110', 'A-1': '0110010',
