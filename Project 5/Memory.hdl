@@ -1,0 +1,48 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/05/Memory.hdl
+
+/**
+ * The complete address space of the computer's memory,
+ * including RAM and memory mapped I/O. 
+ * The chip facilitates read and write operations, as follows:
+ *     Read:  out(t) = Memory[address(t)](t)
+ *     Write: If load(t-1) then Memory[address(t-1)](t) = in(t-1)
+ * In words: the chip always outputs the value stored at the memory 
+ * location specified by address. If load=1, the in value is loaded 
+ * into the memory location specified by address. This value becomes 
+ * available through the out output in the next time step.
+ * Address space rules:
+ * Only the upper 16K+8K+1 words of the Memory chip are used. 
+ * Access to address>24576 (0x6000) is invalid. Access to any address in 
+ * the range 16384-(0x4000–0x5FFF) (2^14):((2^14) + (2^8) - 1)results in accessing the screen memory 
+ * map. Access to address 24576,(0x6000),(2^14) + (2^8)results in accessing the keyboard 
+ * memory map. The behavior in these addresses is described in the 
+ * Screen and Keyboard chip specifications given in the book.
+ */
+
+CHIP Memory {
+    IN in[16], load, address[15];   //load is basically the MSB of address[16]
+    OUT out[16];
+
+    PARTS:
+    /*Assignment: Project 5, CSC 335, Berea College
+      Name: Emily Carter - cartere
+      Date: 11/06/17
+      Instructor: Mario Nakazawa*/
+	  
+	//if load is true, put the value into the address	
+	//address[14] (or address[0]...reads backwards so I think address[14] is MSB) 
+	//Need Dmux to pick register to send load
+	DMux4Way(in=load, sel=address[13..14], a=outram1, b=outram0, c=outscrn); //d=outkbd); Don't need to send to kbd //two MSB as sel. 00 and 01<16384. 16384:24575==10. 11==24576
+	Or(a=outram1, b=outram0, out=outram);  //if outram1 or outram0, outram==1 
+	
+	RAM16K(in=in, load=outram, address=address[0..13], out=ramout);  //address is 14 bits. because 2^14. 
+	Screen(in=in, load=outscrn, address=address[0..12], out=scrnout);  //got error. address is 13 bits? y tho?
+	Keyboard(out=kbdout);  //keyboard is already implemented. Don't need to handle sending values there..?
+	
+	Mux4Way16(a=ramout, b=ramout, c=scrnout, d=kbdout, sel=address[13..14], out=out);
+	
+	//Mux(a=, b=, sel=address[14], out=inorcom);  //maybe for CPU.	
+}

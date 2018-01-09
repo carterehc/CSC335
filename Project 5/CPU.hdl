@@ -1,0 +1,92 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/05/CPU.hdl
+
+/**
+ * The Central Processing unit (CPU).
+ * Consists of an ALU and a set of registers, designed to fetch and 
+ * execute instructions written in the Hack machine language.
+ * In particular, functions as follows:
+ * Executes the inputted instruction according to the Hack machine 
+ * language specification. The D and A in the language specification
+ * refer to CPU-resident registers, while M refers to the external
+ * memory location addressed by A, i.e. to Memory[A]. The inM input 
+ * holds the value of this location. If the current instruction needs 
+ * to write a value to M, the value is placed in outM, the address 
+ * of the target location is placed in the addressM output, and the 
+ * writeM control bit is asserted. (When writeM=0, any value may 
+ * appear in outM). The outM and writeM outputs are combinational: 
+ * they are affected instantaneously by the execution of the current 
+ * instruction. The addressM and pc outputs are clocked: although they 
+ * are affected by the execution of the current instruction, they commit 
+ * to their new values only in the next time unit. If reset=1 then the 
+ * CPU jumps to address 0 (i.e. sets pc=0 in next time unit) rather 
+ * than to the address resulting from executing the current instruction. 
+ */
+
+CHIP CPU {
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset=1) or continue executing
+                         // the current program (reset=0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write into M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
+
+     PARTS:
+    /*Assignment: Project 5, CSC 335, Berea College
+      Name: Emily Carter - cartere
+      Date: 11/06/17
+      Instructor: Mario Nakazawa*/
+	
+	//so when starts with 0 is instruction, starts with 1 is compute, 111acccccdddjjj
+	//or 0vvvvvvvvvvvvvv
+	//if 1, then address of constant
+	//if zero, send to RegisterA 	
+	Mux16(a[15]=false, a[0..14]=instruction[0..14], b=ALUout, sel=instruction[15], out=outtoA);	  //A Mux. MSB=instruction[15]. If MSB, compute, and use ALUout
+	Not(in=instruction[15], out=notMSB);  //not MSB, if 1 then is compute and send to a register
+	
+	//Not(in=notMSB, out=MSB);  //MSB
+
+    Or(a=notMSB, b=instruction[5], out=loadA);  //instruction[5]=d
+	ARegister(in=outtoA, load=loadA, out[0..14]=addressM, out=outa);
+	
+	//gotta decode this...
+	//i think instruction[12]=a
+	//if notMSB, load to A
+	//or if d register load to A	
+	
+	Mux16(a=outa, b=inM, sel=instruction[12], out=ALUmuxout);  //ALU mux. D tells whether to send inM (I think val at address if address) or A val
+
+	ALU(x=outd, y=ALUmuxout, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=ALUoutd, out=ALUout, out=outM,  zr=equal, ng=neg);  //godfuckingdamnit. was sending outa to ALU instead of muxout ie m/a
+    
+	Not(in=equal, out=notz);
+	Not(in=neg, out=notneg);
+	And(a=notz,b=notneg, out=pos);  //if pos, then jump greater than
+	
+	And(a=instruction[15], b=instruction[4], out=loadD);  //if MSB and d, load ALUoutput to register D
+	DRegister(in=ALUoutd, load=loadD, out=outd);
+
+	//where is writeM, where is inc for pc, where is pcload? inc is jjj...if j or j or j? no
+	//jjj jump greater than, equal, less
+	And(a=instruction[0], b=pos, out=jg);  //greater than is 1
+	And(a=instruction[1], b=equal, out=je);
+	And(a=instruction[2], b=neg, out=jl);
+	
+	Or(a=je, b=jl, out=jequalorless);
+	Or(a=jequalorless, b=jg, out=jumpby);  //jump by the val in A
+		
+	And(a=instruction[15],b=jumpby, out=loadpc);  //if compute and jump, jump to val in address in A....is it the address in A or the val in A? well, if compute, is address in A or constant in A? because don't load address if compute. ppfff, idk
+	
+	Not(in=loadpc, out=incpc);//if not jump/load, then inc
+	
+    PC(in=outa, load=loadpc, inc=incpc, reset=reset, out[0..14]=pc);	
+	
+	//you still need writeM
+	And(a=instruction[15], b=instruction[3], out=writeM);  //if compute (instruction[15]=MSB) and d
+}

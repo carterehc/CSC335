@@ -1,0 +1,36 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/05/Computer.hdl
+
+/**
+ * The HACK computer, including CPU, ROM and RAM.
+ * When reset is 0, the program stored in the computer's ROM executes.
+ * When reset is 1, the execution of the program restarts. 
+ * Thus, to start a program’s execution, reset must be pushed "up" (1)
+ * and "down" (0). From this point onward the user is at the mercy of 
+ * the software. In particular, depending on the program's code, the 
+ * screen may show some output and the user may be able to interact 
+ * with the computer via the keyboard.
+ */
+
+CHIP Computer {
+
+    IN reset;
+
+    PARTS:
+    /*Assignment: Project 5, CSC 335, Berea College
+      Name: Emily Carter - cartere
+      Date: 11/06/17
+      Instructor: Mario Nakazawa*/
+	
+	//if not reset, send memory to CPU. 
+	//if reset,  
+	
+	ROM32K(address=addressRom, out=instruct);  //in is address, out is instruction
+	
+	CPU(inM=CPUin, instruction=instruct, reset=reset, outM=Memoin, writeM=memload, addressM=memAddress, pc=addressRom);
+	
+	Memory(in=Memoin, load=memload, address=memAddress, out=CPUin);
+	
+}
