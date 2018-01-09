@@ -1,0 +1,18 @@
+/**
+ * Sets any 1 bit input to zero.
+   To be used in Inc16, or any other hdl that requires presetting of input
+ */
+
+CHIP Zero{
+    IN in;
+    OUT out;
+
+    PARTS:
+    /*Assignment: Project 2, CSC 335, Berea College
+      Name: Emily Carter - cartere
+      Date: 09/15/17
+      Instructor: Mario Nakazawa*/
+	  
+	Not(in=in, out=notin);
+	And(a=in, b=notin, out=out);
+}

@@ -1,0 +1,33 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/02/FullAdder.hdl
+
+/**
+ * Computes the sum of three bits.
+ */
+
+CHIP FullAdder {
+    IN a, b, c;  // 1-bit inputs
+    OUT sum,     // Right bit of a + b + c
+        carry;   // Left bit of a + b + c
+
+    PARTS:
+    /*Assignment: Project 2, CSC 335, Berea College
+      Name: Emily Carter - cartere
+      Date: 09/15/17
+      Instructor: Mario Nakazawa*/
+	//if abnotc, carry is 1, out is 0  
+	
+	//sum
+	Xor(a=a, b=b, out=axorb);  //0 if both equiv, 1 if diff
+	Xor(a=axorb, b=c, out=sum);  //
+	//Or(a=axorb, b=c, out=sum);  //1 if all equiv, because axorb was 0. 0 if 
+	
+	//carry
+	And(a=a, b=b, out=ab);
+	And(a=a,b=c, out=ac);
+	And(a=b, b=c, out=bc);
+	Or(a=ab, b=ac, out=aborc);
+	Or(a=aborc, b=bc, out=carry);
+}

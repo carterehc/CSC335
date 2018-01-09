@@ -1,0 +1,28 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/03/a/Bit.hdl
+
+/**
+ * 1-bit register.
+ * If load[t]=1 then out[t+1] = in[t]
+ *              else out does not change (out[t+1]=out[t])
+ */
+
+CHIP Bit {
+    IN in, load;
+    OUT out;
+
+    PARTS:
+    /*Assignment: Project 3, CSC 335, Berea College
+      Name: Emily Carter - cartere
+      Date: 09/29/17
+      Instructor: Mario Nakazawa*/
+	  
+	//DFF output Q is input D
+	/*Mux(a=out, b=in, sel=load, out=out1);
+	DFF(in=out1, out=out);*/
+	
+	Mux(a=out2, b=in, sel=load, out=out1);
+	DFF(in=out1, out=out2, out=out);    //took me way too long to realize could out to two pins. Thanks to https://github.com/jtdowney/nand2tetris/blob/master/03/a/Bit.hdl
+}

@@ -1,0 +1,40 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/03/a/PC.hdl
+
+/**
+ * A 16-bit counter with load and reset control bits.
+ * if      (reset[t]==1) out[t+1] = 0
+ * else if (load[t]==1)  out[t+1] = in[t]
+ * else if (inc[t]==1)   out[t+1] = out[t] + 1  (integer addition)
+ * else                  out[t+1] = out[t]
+ */
+
+CHIP PC {
+    IN in[16],load,inc,reset;
+    OUT out[16];
+
+    PARTS:
+    /*Assignment: Project 3, CSC 335, Berea College
+      Name: Emily Carter - cartere
+      Date: 09/29/17
+      Instructor: Mario Nakazawa*/
+    
+    //Zero(in=in[0],out=zero);
+    //One(in=in[0], out=one);
+	//ALU(x=outlast, y=outlast, zx=zero, nx=one, zy=one, ny=one, f=one, no=one, out=inc);  //just use incrememter
+	
+	//make 16 bit false
+	Zero16(in=in, out=false);  //apparently you don't have to make false, false just works oh well idk
+	
+	Inc16(in=outlast, out=inced);
+	Mux16(a=outlast, b=inced, sel=inc, out=next);    //pick between outlast++ or outlast
+	
+	Mux16(a=next, b=in, sel=load, out=out1);  //pick between next or in
+	
+	Mux16(a=out1, b=false, sel=reset, out=regval);  //if reset is 1, output false
+	
+	Register(in=regval, load=true, out=outlast,out=out);
+}
+
